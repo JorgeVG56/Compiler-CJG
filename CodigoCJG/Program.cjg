@@ -1,0 +1,8 @@
+int main(){
+  int x = 5;
+  int y = 2 * (x - 5) + 4 * x;
+  cout << "Hola";
+  cout << y;
+  y = y / 2;
+  cout << y;
+}

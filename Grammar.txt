@@ -1,0 +1,18 @@
+PROGRAM ::= MAIN_FUNCTION
+MAIN_FUNCTION ::= int main ( ) { STATEMENT* }
+STATEMENT ::= [DECL ;] | [ASSIGN ;] | IF | WHILE | [COUT ;]
+DECL ::=  TYPE ID [= EXPR]?
+ASSIGN ::= ID = EXPR
+IF ::= if ( EXPR ) { STATEMENT* } [else { STATEMENT* }]?
+WHILE ::= while ( EXPR ) { STATEMENT* }
+COUT ::= cout << [EXPR | STRING]
+EXPR ::= CONDITION
+CONDITION ::= COMPARISON [[&& | ||] COMPARISON]?
+COMPARISON ::= TERM [[< | > | <= |>= | ==] TERM]?
+TERM ::= FACTOR [[+ | -] FACTOR]?
+FACTOR ::= PRIMARY [[* | /] PRIMARY]?
+PRIMARY ::= [( EXPR )] | ID | NUM | true | false
+TYPE ::= int | bool
+STRING ::= "ID"
+ID ::= [a...zA...Z][a...zA...Z0...9]*
+NUM ::= [0...9]+

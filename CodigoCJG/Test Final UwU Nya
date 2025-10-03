@@ -1,0 +1,16 @@
+int main(){
+  int x = 0;
+  int y = 5;
+  while(x < 10){
+    if(x == 2){
+      cout << "Holasojoge";
+    } else{
+      if(x == y){
+        cout << "Holasocalitos";
+      } else{
+        cout << "Holasoyamil";
+      }
+    }
+    x = x + 1;
+  }
+}
