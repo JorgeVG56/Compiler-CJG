@@ -1,8 +1,7 @@
 int main(){
-  int y = 9;
-  if(((y / 2) * 2) == y){
-    cout << "Par";
-  } else{
-    cout << "Impar";
+  int x = 0;
+  while(x < 10){
+    cout << "Ciclo";
+    x = x + 1;
   }
 }

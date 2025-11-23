@@ -19,9 +19,8 @@ public class CIGenerator {
     data.clear();
     text.clear();
     data.add(new Instruction(null,"section", ".data"));
-    data.add(new Instruction("nl","DB", "10"));
-    data.add(new Instruction("msg_0","DB", "'FIN', 0xA, 0xD"));
-    data.add(new Instruction("msgLen_0","EQU", "$- msg_0"));
+    data.add(new Instruction("_msg_0","DB", "'FIN', 0xA"));
+    data.add(new Instruction("_msgLen_0","EQU", "$- msg_0"));
     text.add(new Instruction(null, "section", ".text"));
     text.add(new Instruction(null, "global", "_start"));
     text.add(new Instruction("_start:", null, null));
@@ -40,7 +39,7 @@ public class CIGenerator {
   
   private void move(String l, String r){ text.add(new Instruction(null, "MOV", l + ", " + r)); }
   
-  private void swap(String l, String r){ text.add(new Instruction(null, "xchg", l + ", " + r)); }
+  private void swap(String l, String r){ text.add(new Instruction(null, "XCHG", l + ", " + r)); }
   
   private void addVariable(String id, String ambit){
     String name = stm.getSymbol(id, ambit).getId() + "_" + stm.getSymbol(id, ambit).getAmbit();
@@ -49,12 +48,12 @@ public class CIGenerator {
   }
   
   private void setVariable(String id, String ambit, String value){
-    move("  " + stm.getSymbol(id, ambit).getSize() + " " + stm.getSymbol(id, ambit).toString(), value);
+    move(stm.getSymbol(id, ambit).getSize() + " " + stm.getSymbol(id, ambit).toString(), value);
   }
   
   private void addString(String string){
-    data.add(new Instruction("msg_" + cnt, "DB", "'" + string + "', 0xA"));
-    data.add(new Instruction("msgLen_" + cnt, "EQU", "$- msg_" + cnt));
+    data.add(new Instruction("_msg_" + cnt, "DB", "'" + string + "', 0xA"));
+    data.add(new Instruction("_msgLen_" + cnt, "EQU", "$- msg_" + cnt));
   }
   
   private void addToStack(){ text.add(new Instruction(null, "PUSH", "eax")); }
@@ -142,8 +141,8 @@ public class CIGenerator {
     nxtPos(1);
     nxtPos(1);
     string();
-    move("edx", "msgLen_" + cnt);
-    move("ecx", "msg_" + cnt);
+    move("edx", "_msgLen_" + cnt);
+    move("ecx", "_msg_" + cnt);
     move("ebx", "1");
     move("eax", "4");
     text.add(new Instruction(null, "INT", "0x80"));

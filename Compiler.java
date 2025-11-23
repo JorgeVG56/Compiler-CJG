@@ -1,4 +1,5 @@
 import Modelo.CIGenerator;
+import Modelo.COGenerator;
 import Modelo.ErrorHandler;
 import Modelo.Parser;
 import Modelo.STM;
@@ -13,8 +14,9 @@ public class Compiler {
     Parser ps = new Parser(errorHandler);
     Semantico semantico = new Semantico(errorHandler, stm);
     CIGenerator cig = new CIGenerator(stm);
+    COGenerator cog = new COGenerator();
     Vista vista = new Vista();
-    Controlador controlador = new Controlador(sc, ps, semantico, cig, errorHandler, stm, vista);
+    Controlador controlador = new Controlador(sc, ps, semantico, cig, cog, errorHandler, stm, vista);
     vista.doListeners(controlador);
   }
 }

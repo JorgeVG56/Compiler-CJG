@@ -8,15 +8,15 @@ public class Vista extends JFrame{
   private JMenu fileMenu, fileName;
   private JMenuItem saveButton, uploadButton;
   private JPanel topPanel, bottomPanel, scannerPanel, errorPanel, buttonsPanel, cIPanel, cOPanel;
-  private JTextArea fileText, scannerText, errorText, cOText;
-  private JTable cITable;
+  private JTextArea fileText, scannerText, errorText;
+  private JTable cITable, cOTable;
   @SuppressWarnings("unused")
   private JScrollPane filePane, scannerPane, errorPane, cIPane, cOPane;
   private JButton scannerButton, parserButton, semanticButton, cIButton, cOButton;
   
   private JFileChooser fileChooser;
   private Font font, fontTable;
-  private String[] columnNames;
+  private String[] columnNamesCI, columnNamesCO;
   
   public Vista(){
     super("Dev CJG");
@@ -75,17 +75,16 @@ public class Vista extends JFrame{
     cIPanel.add(cIButton = new JButton("CI"), BorderLayout.NORTH);
     cIButton.setFont(font);
     cIButton.setBackground(Color.YELLOW);
-    cIPanel.add(cIPane = new JScrollPane(cITable = new JTable(new String[][]{}, columnNames = new String[]{"Etiqueta", "Comando", "Operandos"})));
+    cIPanel.add(cIPane = new JScrollPane(cITable = new JTable(new String[][]{}, columnNamesCI = new String[]{"Etiqueta", "Comando", "Operandos"})));
     cITable.getTableHeader().setFont(fontTable);
     cITable.setFont(fontTable);
     bottomPanel.add(cOPanel = new JPanel(new BorderLayout()));
     cOPanel.add(cOButton = new JButton("CO"), BorderLayout.NORTH);
     cOButton.setFont(font);
     cOButton.setBackground(Color.YELLOW);
-    cOPanel.add(cOPane = new JScrollPane(cOText = new JTextArea()));
-    cOText.setFont(font);
-    cOText.setEditable(false);
-    cOText.setDisabledTextColor(Color.BLACK);
+    cOPanel.add(cOPane = new JScrollPane(cOTable = new JTable(new String[][]{}, columnNamesCO = new String[]{"Offset", "Comando"})));
+    cOTable.getTableHeader().setFont(fontTable);
+    cOTable.setFont(fontTable);
     
     fileChooser = new JFileChooser("/home/jorgitox/Documentos/Programas/lya/CodigoCJG");
     
@@ -118,51 +117,66 @@ public class Vista extends JFrame{
     fileName.setText(name);
     fileText.setText(content);
   }
-  
-  public void setScanner(String content){ scannerText.setText(content); }
-  
-  public void setError(String content){ errorText.setText(content); }
 
-  public void setCIGenerator(String [][] content){
-    cIPanel.remove(cIPane);
-
-    cIPanel.add(cIPane = new JScrollPane(cITable = new JTable(content, columnNames) {
+  private void setGenerator(JPanel p, JScrollPane sp, JTable t, String [][] content, String[] names){
+    p.remove(sp);
+    
+    p.add(sp = new JScrollPane(t = new JTable(content, names) {
       @Override
       public boolean isCellEditable(int row, int column) {
         return false;
       }
     }));
-
-    cITable.setFont(fontTable);
-    cITable.getTableHeader().setFont(fontTable);
-    cITable.getTableHeader().setReorderingAllowed(false);
+    
+    t.setFont(fontTable);
+    t.getTableHeader().setFont(fontTable);
+    t.getTableHeader().setReorderingAllowed(false);
     repaint();
     revalidate();
   }
+
+  /*
+  public void setCOGenerator(String [][] content){
+    cOPanel.remove(cOPane);
+    
+    cOPanel.add(cOPane = new JScrollPane(cOTable = new JTable(content, columnNames) {
+      @Override
+      public boolean isCellEditable(int row, int column) {
+        return false;
+      }
+    }));
+    
+    cOTable.setFont(fontTable);
+    cOTable.getTableHeader().setFont(fontTable);
+    cOTable.getTableHeader().setReorderingAllowed(false);
+    repaint();
+    revalidate();
+  }
+    */
   
-  public void setScannerButton(Color c){
-    scannerButton.setBackground(c);
-    scannerButton.repaint();
-    scannerButton.update(scannerButton.getGraphics());
+  private void recolor(JButton b, Color c){
+    b.setBackground(c);
+    b.repaint();
+    b.update(b.getGraphics());
   }
   
-  public void setParserButton(Color c){
-    parserButton.setBackground(c);
-    parserButton.repaint();
-    parserButton.update(parserButton.getGraphics());
-  }
+  public void setCIGenerator(String [][] content){ setGenerator(cIPanel, cIPane, cITable, content, columnNamesCI); }
+
+  public void setCOGenerator(String [][] content){ setGenerator(cOPanel, cOPane, cOTable, content, columnNamesCO); }
   
-  public void setSemanticButton(Color c){
-    semanticButton.setBackground(c);
-    semanticButton.repaint();
-    semanticButton.update(semanticButton.getGraphics());
-  }
+  public void setScanner(String content){ scannerText.setText(content); }
   
-  public void setCIButton(Color c){
-    cIButton.setBackground(c);
-    cIButton.repaint();
-    cIButton.update(cIButton.getGraphics());
-  }
+  public void setError(String content){ errorText.setText(content); }
+  
+  public void setScannerButton(Color c){ recolor(scannerButton, c); }
+  
+  public void setParserButton(Color c){ recolor(parserButton, c); }
+  
+  public void setSemanticButton(Color c){ recolor(semanticButton, c); }
+  
+  public void setCIButton(Color c){ recolor(cIButton, c); }
+
+  public void setCOButton(Color c){ recolor(cOButton, c); }
   
   public JMenuItem getSaveButton() { return saveButton; }
   

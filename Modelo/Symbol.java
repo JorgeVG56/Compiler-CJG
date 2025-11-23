@@ -18,13 +18,13 @@ public class Symbol{
 
   public String getRes() {
     if(type.equals("int")) return "DD";
-    if(type.equals("bool")) return "DB";
+    if(type.equals("bool")) return "DD";
     return null;
   }
 
   public String getSize() {
     if(type.equals("int")) return "DWORD";
-    if(type.equals("bool")) return "BYTE";
+    if(type.equals("bool")) return "DWORD";
     return null;
   }
 

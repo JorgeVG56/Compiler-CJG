@@ -15,6 +15,7 @@ public class Semantico {
   }
   
   public boolean semantico(ArrayList<Token> tokens){
+    stm.reset();
     cnt = 0;
     position = 0;
     this.tokens = tokens;

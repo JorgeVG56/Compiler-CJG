@@ -1,8 +1,0 @@
-int main(){
-  int a = 55;
-  if(a > 50){
-    cout << "Aprobado";
-  } else{
-    cout << "Reprobado";
-  }
-}

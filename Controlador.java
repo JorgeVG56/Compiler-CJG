@@ -11,6 +11,7 @@ public class Controlador implements ActionListener{
   private Parser parser;
   private Semantico semantico;
   private CIGenerator cIGenerator;
+  private COGenerator cOGenerator;
   private ErrorHandler errorHandler;
   private STM stm;
 
@@ -19,11 +20,12 @@ public class Controlador implements ActionListener{
 
   private File file;
   
-  public Controlador(Scanner scanner, Parser parser, Semantico semantico, CIGenerator cIGenerator, ErrorHandler errorHandler, STM stm, Vista vista){
+  public Controlador(Scanner scanner, Parser parser, Semantico semantico, CIGenerator cIGenerator, COGenerator cOGenerator, ErrorHandler errorHandler, STM stm, Vista vista){
     this.scanner = scanner;
     this.parser = parser;
     this.semantico = semantico;
     this.cIGenerator = cIGenerator;
+    this.cOGenerator = cOGenerator;
     this.errorHandler = errorHandler;
     this.stm = stm;
     this.vista = vista;
@@ -37,6 +39,7 @@ public class Controlador implements ActionListener{
     if(e.getSource() == vista.getParserButton()) { parser(); return; }
     if(e.getSource() == vista.getSemanticButton()) { semantico(); return; }
     if(e.getSource() == vista.getcIButton()) { ciGenerator(); return; }
+    if(e.getSource() == vista.getcOButton()) { coGenerator(); return; }
   }
 
   private void upload(){
@@ -46,23 +49,19 @@ public class Controlador implements ActionListener{
       String line;
       while((line = br.readLine()) != null) content += line + "\n";
       fileName = file.getName();
-    } catch (Exception e) {
-      // e.printStackTrace();
-    }
+    } catch (Exception e) { }
     vista.setFile(fileName, content);
   }  
 
   private void save(){
     String fileName = "Archivo sin Subir";
     try {
-      if(file == null) file = vista.saveFile();
+      if(file == null) file = vista.uploadFile();
       FileWriter fw = new FileWriter(file);
       fw.write(vista.getFileText().getText());
       fw.close();
       fileName = file.getName();
-    } catch (Exception e) {
-      // e.printStackTrace();
-    }
+    } catch (Exception e) { }
     vista.setFile(fileName, vista.getFileText().getText());
   }
   
@@ -74,7 +73,7 @@ public class Controlador implements ActionListener{
     vista.setScanner(scanner.toString());
     vista.setError(errorHandler.toString());
     vista.setScannerButton(!errorHandler.hasErrors() ? Color.GREEN : Color.RED);
-    sleep(500);
+    sleep(250);
     vista.setScannerButton(Color.YELLOW);
     return !errorHandler.hasErrors();
   }
@@ -84,25 +83,23 @@ public class Controlador implements ActionListener{
     parser.parser(scanner.getTokens());
     vista.setError(errorHandler.toString());
     vista.setParserButton(!errorHandler.hasErrors() ? Color.GREEN : Color.RED);
-    sleep(500);
+    sleep(250);
     vista.setParserButton(Color.YELLOW);
     return !errorHandler.hasErrors();
   }
 
   private boolean semantico(){
     if(!parser()) return false;
-    stm.reset();
     semantico.semantico(scanner.getTokens());
     vista.setError(errorHandler.toString());
     vista.setSemanticButton(!errorHandler.hasErrors() ? Color.GREEN : Color.RED);
-    sleep(500);
+    sleep(250);
     vista.setSemanticButton(Color.YELLOW);
     return !errorHandler.hasErrors();
   }
 
   private boolean ciGenerator(){
     if(!semantico()) return false;
-    cIGenerator.reset();
     cIGenerator.generator(scanner.getTokens());
     ArrayList<Instruction> data = cIGenerator.getData();
     ArrayList<Instruction> text = cIGenerator.getText();
@@ -122,6 +119,12 @@ public class Controlador implements ActionListener{
     vista.setCIButton(!errorHandler.hasErrors() ? Color.GREEN : Color.RED);
     sleep(500);
     vista.setCIButton(Color.YELLOW);
+    return true;
+  }
+
+  private boolean coGenerator(){
+    if(!ciGenerator()) return false;
+    cOGenerator.generator(cIGenerator.getData(), cIGenerator.getText());
     return true;
   }
 
