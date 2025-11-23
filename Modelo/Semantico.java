@@ -35,8 +35,7 @@ public class Semantico {
   private boolean main_function(){
     nxtPos(5);
     while(tokens.get(position).getId() != 9) if(!statement("main")) return false;
-    nxtPos(1);
-    return true;
+    return nxtPos(1);
   }
   
   private boolean statement(String ambit){
@@ -101,13 +100,7 @@ public class Semantico {
   private boolean cout(String ambit){
     nxtPos(1);
     nxtPos(1);
-    if(tokens.get(position).getId() != 16){
-      String value = expr(ambit);
-      if(value.equals("error")) return false; 
-      if(value.equals("bool")) return addError("No se puede imprimir un valor de tipo bool"); 
-      return true;
-    }
-    else string();
+    string();
     return true;
   }
   

@@ -2,36 +2,30 @@ package Modelo;
 import java.util.*;
 
 public class CIGenerator {
-  private ArrayList<String> data, bss, text;
+  private ArrayList<Instruction> data, text;
   private ArrayList<Token> tokens;
-  private ErrorHandler errorHandler;
   private STM stm;
   
   private int position;
-  private int cnt, cntStack, cntJmp, maxStack;
+  private int cnt, cntJmp;
   
-  public CIGenerator(ErrorHandler errorHandler, STM stm){
-    this.errorHandler = errorHandler;
+  public CIGenerator(STM stm){
     this.stm = stm;
     data = new ArrayList<>();
-    bss = new ArrayList<>();
     text = new ArrayList<>();
   }
-
+  
   public void reset(){
     data.clear();
-    bss.clear();
     text.clear();
-    data.add("section .data");
-    data.add("  nl db 10");
-    data.add("  msg_0 DB 'FIN', 0xA, 0xD");
-    data.add("  msgLen_0 EQU $- msg_0");
-    bss.add("section .bss");
-    bss.add("  buf resb 32");
-    text.add("section .text");
-    text.add("  global _start");
-    text.add("_start:");
-    cnt = cntStack = cntJmp = maxStack = 1;
+    data.add(new Instruction(null,"section", ".data"));
+    data.add(new Instruction("nl","DB", "10"));
+    data.add(new Instruction("msg_0","DB", "'FIN', 0xA, 0xD"));
+    data.add(new Instruction("msgLen_0","EQU", "$- msg_0"));
+    text.add(new Instruction(null, "section", ".text"));
+    text.add(new Instruction(null, "global", "_start"));
+    text.add(new Instruction("_start:", null, null));
+    cnt = cntJmp = 1;
     position = 0;
   }
   
@@ -42,53 +36,30 @@ public class CIGenerator {
     addEnd();
   }
   
-  private boolean nxtPos(int n){
-    position += n;
-    return true;
+  private void nxtPos(int n){ position += n; }
+  
+  private void move(String l, String r){ text.add(new Instruction(null, "MOV", l + ", " + r)); }
+  
+  private void swap(String l, String r){ text.add(new Instruction(null, "xchg", l + ", " + r)); }
+  
+  private void addVariable(String id, String ambit){
+    String name = stm.getSymbol(id, ambit).getId() + "_" + stm.getSymbol(id, ambit).getAmbit();
+    String command = stm.getSymbol(id, ambit).getRes();
+    data.add(new Instruction(name, command, "0"));
   }
   
-  private boolean addError(String message){
-    errorHandler.addError(new Error("ERROR CI", -1, -1));
-    errorHandler.addError(new Error(message, tokens.get(position).getLine(), tokens.get(position).getColumn()));
-    return false;
-  }
-
-  private void move(String l, String r){
-    text.add("  MOV " + l + ", " + r);
-  }
-
-  private void swap(String l, String r){
-    text.add("  XOR " + l + ", " + r);
-    text.add("  XOR " + r + ", " + l);
-    text.add("  XOR " + l + ", " + r);
-  }
-
-  private void addVariable(String id, String ambit){
-    bss.add("  " + stm.getSymbol(id, ambit).getId() + "_" + stm.getSymbol(id, ambit).getAmbit() + " " + stm.getSymbol(id, ambit).getRes() + " 1");
-  }
-
   private void setVariable(String id, String ambit, String value){
     move("  " + stm.getSymbol(id, ambit).getSize() + " " + stm.getSymbol(id, ambit).toString(), value);
   }
-
+  
   private void addString(String string){
-    data.add("  msg_" + cnt + " DB '" + string + "', 0xA, 0xD");
-    data.add("  msgLen_" + cnt + " EQU $- " + "msg_" + cnt);
+    data.add(new Instruction("msg_" + cnt, "DB", "'" + string + "', 0xA"));
+    data.add(new Instruction("msgLen_" + cnt, "EQU", "$- msg_" + cnt));
   }
-
-  private void addToStack(){
-    move("  [tmp_" + cntStack + "]", "eax");
-    cntStack++;
-    if(cntStack > maxStack){
-      bss.add("  tmp_" + maxStack + " RESD 1");
-      maxStack ++;
-    }
-  }
-
-  private void popFromStack(){
-    cntStack--;
-    move("ebx", "[tmp_" + cntStack + "]");
-  }
+  
+  private void addToStack(){ text.add(new Instruction(null, "PUSH", "eax")); }
+  
+  private void popFromStack(){ text.add(new Instruction(null, "POP", "ebx")); }
   
   private void main_function(){
     nxtPos(5);
@@ -135,61 +106,52 @@ public class CIGenerator {
     String value = expr(ambit);
     int elseLabel = cntJmp++;
     int endLabel = cntJmp++;
-    text.add("  CMP " + value + ", 0");
-    text.add("  JE L" + elseLabel);
+    text.add(new Instruction(null, "CMP", value + ", 0"));
+    text.add(new Instruction(null, "JE", "L" + elseLabel + ""));
     nxtPos(2);
     while(tokens.get(position).getId() != 9) statement(ambit + (cnt++));
     nxtPos(1);
-    text.add("  JMP L" + endLabel);
-    text.add("\nL" + elseLabel + ":");
+    text.add(new Instruction(null, "JMP", "L" + endLabel));
+    text.add(new Instruction("L" + elseLabel + ":", null, null));
     if(tokens.get(position).getId() != 3){
-      text.add("\nL" + endLabel + ":");
+      text.add(new Instruction("L" + endLabel + ":", null, null));
       return;
     }
     nxtPos(2);
     while(tokens.get(position).getId() != 9) statement(ambit + (cnt++));
     nxtPos(1);
-    text.add("\nL" + endLabel + ":");
+    text.add(new Instruction("L" + endLabel + ":", null, null));
   }
   
   private void _while(String ambit){
     nxtPos(2);
     int jmpLabel = cntJmp++;
     int endLabel = cntJmp++;
-    text.add("\nL" + jmpLabel + ":");
+    text.add(new Instruction("L" + jmpLabel + ":", null, null));
     String value = expr(ambit);
-    text.add("  CMP " + value + ", 0");
-    text.add("  JE L" + endLabel);
+    text.add(new Instruction(null, "CMP", value + ", 0"));
+    text.add(new Instruction(null, "JE", "L" + endLabel));
     nxtPos(2);
     while(tokens.get(position).getId() != 9) statement(ambit+"_"+(cnt++));
     nxtPos(1);
-    text.add("  JMP L" + jmpLabel);
-    text.add("\nL" + endLabel + ":");
+    text.add(new Instruction(null, "JMP", "L" + jmpLabel));
+    text.add(new Instruction("L" + endLabel + ":", null, null));
   }
   
   private boolean cout(String ambit){
     nxtPos(1);
-    do {
-      nxtPos(1);
-      if(tokens.get(position).getId() != 16){ 
-        move("eax", expr(ambit));
-        text.add("  CALL print_int");
-      } else { 
-        string();
-        text.add("  MOV edx, msgLen_" + cnt);
-        text.add("  MOV ecx, msg_" + cnt);
-        text.add("  MOV ebx, 1");
-        text.add("  MOV eax, 4");
-        text.add("  INT 0x80");
-        cnt++;
-      }
-    } while (tokens.get(position).getId() == 18);
+    nxtPos(1);
+    string();
+    move("edx", "msgLen_" + cnt);
+    move("ecx", "msg_" + cnt);
+    move("ebx", "1");
+    move("eax", "4");
+    text.add(new Instruction(null, "INT", "0x80"));
+    cnt++;
     return true;
   }
   
-  private String expr(String ambit){
-    return condition(ambit);
-  }
+  private String expr(String ambit){ return condition(ambit); }
   
   private String condition(String ambit){
     String valueLeft = comparison(ambit);
@@ -201,8 +163,8 @@ public class CIGenerator {
     if(!valueRight.equals("eax")) move("eax", valueRight);
     popFromStack();
     swap("eax", "ebx");
-    if(op.equals("AND")) text.add("  AND eax, ebx");
-    if(op.equals("OR")) text.add("  OR eax, ebx");
+    if(op.equals("AND")) text.add(new Instruction(null, "AND", "eax, ebx"));
+    if(op.equals("OR")) text.add(new Instruction(null, "OR", "eax, ebx"));
     return "eax";
   }
   
@@ -216,13 +178,13 @@ public class CIGenerator {
     if(!valueRight.equals("eax")) move("eax", valueRight);
     popFromStack();
     swap("eax", "ebx");
-    text.add("  CMP eax, ebx"); 
-    if(op.equals("LT")) text.add("  SETL al");
-    if(op.equals("MT")) text.add("  SETG al");
-    if(op.equals("LET")) text.add("  SETLE al");
-    if(op.equals("MET")) text.add("  SETGE al");
-    if(op.equals("EQUAL")) text.add("  SETE al");
-    text.add("  MOVZX eax, al"); 
+    text.add(new Instruction(null, "CMP", "eax, ebx"));
+    if(op.equals("LT")) text.add(new Instruction(null, "SETL", "al"));
+    if(op.equals("MT")) text.add(new Instruction(null, "SETG", "al"));
+    if(op.equals("LET")) text.add(new Instruction(null, "SETLE", "al"));
+    if(op.equals("MET")) text.add(new Instruction(null, "SETGE", "al"));
+    if(op.equals("EQUAL")) text.add(new Instruction(null, "SETE", "al"));
+    text.add(new Instruction(null, "MOVZX", "eax, al"));
     return "eax";
   }
   
@@ -236,8 +198,8 @@ public class CIGenerator {
     if(!valueRight.equals("eax")) move("eax", valueRight);
     popFromStack();
     swap("eax", "ebx");
-    if(op.equals("PLUS")) text.add("  ADD eax, ebx");
-    if(op.equals("MINUS")) text.add("  SUB eax, ebx");
+    if(op.equals("PLUS")) text.add(new Instruction(null, "ADD", "eax, ebx"));
+    if(op.equals("MINUS")) text.add(new Instruction(null, "SUB", "eax, ebx"));
     return "eax";
   }
   
@@ -251,8 +213,11 @@ public class CIGenerator {
     if(!valueRight.equals("eax")) move("eax", valueRight);
     popFromStack();
     swap("eax", "ebx");
-    if(op.equals("MULT")) text.add("  MUL ebx"); 
-    if(op.equals("DIV")) { text.add("  XOR edx, edx"); text.add("  IDIV ebx"); }
+    if(op.equals("MUL")) text.add(new Instruction(null, "MUL", "ebx")); 
+    if(op.equals("DIV")) { 
+      text.add(new Instruction(null, "XOR", "edx, edx")); 
+      text.add(new Instruction(null, "DIV", "ebx"));
+    }
     return "eax";
   }
   
@@ -274,7 +239,6 @@ public class CIGenerator {
       String fl = tokens.get(position++).getLexema();
       return (fl.equals("true") ? "1" : "0");
     }
-    addError("Hubo un error inesperado");
     return "error";
   }
   
@@ -285,91 +249,29 @@ public class CIGenerator {
     nxtPos(1);
     return string;
   }
-  
-  private String number(){
-    String number = tokens.get(position++).getLexema();
-    return number;
-  }
 
   private void addEnd(){
-    text.add("  MOV edx, msgLen_0");
-    text.add("  MOV ecx, msg_0");
-    text.add("  MOV ebx, 1");
-    text.add("  MOV eax, 4");
-    text.add("  INT 0x80");
-    text.add("  MOV ebx, 0");
-    text.add("  MOV eax, 1");
-    text.add("  INT 0x80");
-    text.add("\nprint_int:\n" + //
-            "  push rbx\n" + //
-            "  push rcx\n" + //
-            "  push rdx\n" + //
-            "  push rsi\n" + //
-            "  push rdi\n" + //
-            "  push r8\n" + //
-            "  mov ecx, eax\n" + //
-            "  xor r8b, r8b\n" + //
-            "  cmp ecx, 0\n" + //
-            "  jge .unsigned\n" + //
-            "  neg ecx\n" + //
-            "  mov r8b, 1\n" + //
-            "\n" + //
-            ".unsigned:\n" + //
-            "  lea r9, [buf + 31]\n" + //
-            "  xor r10, r10\n" + //
-            "  mov eax, ecx\n" + //
-            "  mov ebx, 10\n" + //
-            "  cmp eax, 0\n" + //
-            "  jne .loop\n" + //
-            "  mov byte [r9], '0'\n" + //
-            "  dec r9\n" + //
-            "  inc r10\n" + //
-            "  jmp .done\n" + //
-            "\n" + //
-            ".loop:\n" + //
-            "  xor edx, edx\n" + //
-            "  div ebx\n" + //
-            "  add dl, '0'\n" + //
-            "  mov [r9], dl\n" + //
-            "  dec r9\n" + //
-            "  inc r10\n" + //
-            "  mov eax, eax\n" + //
-            "  cmp eax, 0\n" + //
-            "  jne .loop\n" + //
-            "\n" + //
-            ".done:\n" + //
-            "  cmp r8b, 0\n" + //
-            "  je .no_sign\n" + //
-            "  mov byte [r9], '-'\n" + //
-            "  dec r9\n" + //
-            "  inc r10\n" + //
-            "\n" + //
-            ".no_sign:\n" + //
-            "  lea rsi, [r9 + 1]\n" + //
-            "  mov rdx, r10\n" + //
-            "  mov rax, 1\n" + //
-            "  mov rdi, 1\n" + //
-            "  syscall\n" + //
-            "  mov rax, 1\n" + //
-            "  mov rdi, 1\n" + //
-            "  lea rsi, [rel nl]\n" + //
-            "  mov rdx, 1\n" + //
-            "  syscall\n" + //
-            "  pop r8\n" + //
-            "  pop rdi\n" + //
-            "  pop rsi\n" + //
-            "  pop rdx\n" + //
-            "  pop rcx\n" + //
-            "  pop rbx\n" + //
-            "  ret");
+    text.add(new Instruction(null, "MOV", "edx, msgLen_0"));
+    text.add(new Instruction(null, "MOV", "ecx, msg_0"));
+    text.add(new Instruction(null, "MOV", "ebx, 1"));
+    text.add(new Instruction(null, "MOV", "eax, 4"));
+    text.add(new Instruction(null, "INT", "0x80"));
+    text.add(new Instruction(null, "MOV", "ebx, 0"));
+    text.add(new Instruction(null, "MOV", "eax, 1"));
+    text.add(new Instruction(null, "INT", "0x80"));
   }
-
+  
+  private String number(){ return tokens.get(position++).getLexema(); }  
+  
+  public ArrayList<Instruction> getData() { return data; }
+  
+  public ArrayList<Instruction> getText() { return text; }
+  
   @Override
   public String toString() {
     String string = "";
-    for(String s : data) string += s + "\n";
-    for(String s : bss) string += s + "\n";
-    for(String s : text) string += s + "\n";
+    for(Instruction s : data) string += s + "\n";
+    for(Instruction s : text) string += s + "\n";
     return string;
   }
 }

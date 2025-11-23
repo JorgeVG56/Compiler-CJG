@@ -1,0 +1,8 @@
+int main(){
+  int y = 9;
+  if(((y / 2) * 2) == y){
+    cout << "Par";
+  } else{
+    cout << "Impar";
+  }
+}

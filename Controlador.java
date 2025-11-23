@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
+
 import Modelo.*;
 
 public class Controlador implements ActionListener{
@@ -102,7 +104,20 @@ public class Controlador implements ActionListener{
     if(!semantico()) return false;
     cIGenerator.reset();
     cIGenerator.generator(scanner.getTokens());
-    vista.setCIGenerator(cIGenerator.toString());
+    ArrayList<Instruction> data = cIGenerator.getData();
+    ArrayList<Instruction> text = cIGenerator.getText();
+    String [][] content = new String[data.size() + text.size()][3];
+    for (int i = 0; i < data.size(); i++) {
+      content[i][0] = data.get(i).getName();
+      content[i][1] = data.get(i).getCommand();
+      content[i][2] = data.get(i).getOperands();
+    }
+    for (int i = 0; i < text.size(); i++) {
+      content[data.size() + i][0] = text.get(i).getName();
+      content[data.size() + i][1] = text.get(i).getCommand();
+      content[data.size() + i][2] = text.get(i).getOperands();
+    }
+    vista.setCIGenerator(content);
     vista.setError(errorHandler.toString());
     vista.setCIButton(!errorHandler.hasErrors() ? Color.GREEN : Color.RED);
     sleep(500);

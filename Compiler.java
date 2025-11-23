@@ -12,7 +12,7 @@ public class Compiler {
     Scanner sc = new Scanner(errorHandler, stm);
     Parser ps = new Parser(errorHandler);
     Semantico semantico = new Semantico(errorHandler, stm);
-    CIGenerator cig = new CIGenerator(errorHandler, stm);
+    CIGenerator cig = new CIGenerator(stm);
     Vista vista = new Vista();
     Controlador controlador = new Controlador(sc, ps, semantico, cig, errorHandler, stm, vista);
     vista.doListeners(controlador);

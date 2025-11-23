@@ -45,28 +45,16 @@ public class Token {
     return -1;
   }
 
-  public int getId() {
-    return id;
-  }
+  public int getId() { return id; }
 
-  public String getLexema() {
-    return lexema;
-  }
+  public String getLexema() { return lexema; }
 
-  public String getType() {
-    return type;
-  }
+  public String getType() { return type; }
 
-  public int getColumn() {
-    return column;
-  }
+  public int getColumn() { return column; }
 
-  public int getLine() {
-    return line;
-  }
+  public int getLine() { return line; }
 
   @Override
-  public String toString(){
-    return "<" + type + "> " + lexema;
-  }
+  public String toString(){ return "<" + type + "> " + lexema; }
 }

@@ -28,52 +28,53 @@ public class Scanner{
           
           switch (c) {
             case '{':
-            addToken(lineNumber, i, current);
-            tokens.add(new Token("LBRA", "{", lineNumber, i));
-            break;
+              addToken(lineNumber, i, current);
+              tokens.add(new Token("LBRA", "{", lineNumber, i));
+              break;
             case '}':
-            addToken(lineNumber, i, current);
-            tokens.add(new Token("RBRA", "}", lineNumber, i));
-            break;
+              addToken(lineNumber, i, current);
+              tokens.add(new Token("RBRA", "}", lineNumber, i));
+              break;
             case '(':
-            addToken(lineNumber, i, current);
-            tokens.add(new Token("LPAR", "(", lineNumber, i));
-            break;
+              addToken(lineNumber, i, current);
+              tokens.add(new Token("LPAR", "(", lineNumber, i));
+              break;
             case ')':
-            addToken(lineNumber, i, current);
-            tokens.add(new Token("RPAR", ")", lineNumber, i));
-            break;
+              addToken(lineNumber, i, current);
+              tokens.add(new Token("RPAR", ")", lineNumber, i));
+              break;
             case ';':
-            addToken(lineNumber, i, current);
-            tokens.add(new Token("SEMI", ";", lineNumber, i));
-            break;
+              addToken(lineNumber, i, current);
+              tokens.add(new Token("SEMI", ";", lineNumber, i));
+              break;
             case '+':
-            addToken(lineNumber, i, current);
-            tokens.add(new Token("PLUS", "+", lineNumber, i));
-            break;
+              addToken(lineNumber, i, current);
+              tokens.add(new Token("PLUS", "+", lineNumber, i));
+              break;
             case '-':
-            addToken(lineNumber, i, current);
-            tokens.add(new Token("MINUS", "-", lineNumber, i));
-            break;
+              addToken(lineNumber, i, current);
+              tokens.add(new Token("MINUS", "-", lineNumber, i));
+              break;
             case '*':
-            addToken(lineNumber, i, current);
-            tokens.add(new Token("MUL", "*", lineNumber, i));
-            break;
+              addToken(lineNumber, i, current);
+              tokens.add(new Token("MUL", "*", lineNumber, i));
+              break;
             case '/':
-            addToken(lineNumber, i, current);
-            tokens.add(new Token("DIV", "/", lineNumber, i));
-            break;
+              addToken(lineNumber, i, current);
+              tokens.add(new Token("DIV", "/", lineNumber, i));
+              break;
             case '"':
-            addToken(lineNumber, i, current);
-            tokens.add(new Token("QUOTE", "\"", lineNumber, i));
-            break;
+              addToken(lineNumber, i, current);
+              tokens.add(new Token("QUOTE", "\"", lineNumber, i));
+              break;
             case ' ':
-            addToken(lineNumber, i, current);
-            break;
+              addToken(lineNumber, i, current);
+              break;
             default:
-            added = false;
-            break;
+              added = false;
+              break;
           }
+
           if(added){
             current = "";
             continue;
@@ -81,74 +82,74 @@ public class Scanner{
           
           switch (c) {
             case '<':
-            if(!current.equals("<")){
-              addToken(lineNumber, i, current);
-              current = "" + c;
-            } else{
-              current += c;
-              addToken(lineNumber, i, current);
-              current = "";
-            }
-            break;
-            case '=':
-            if(!current.equals("<") && !current.equals(">") && !current.equals("=")){
-              addToken(lineNumber, i, current);
-              current = "" + c;
-            } else{
-              current += c;
-              addToken(lineNumber, i, current);
-              current = "";
-            }
-            break;
-            case '>':
-            addToken(lineNumber, i, current);
-            current = "" + c;
-            break;
-            case '|':
-            if(!current.equals("|")){
-              addToken(lineNumber, i, current);
-              current = "" + c;
-            } else{
-              current += c;
-              addToken(lineNumber, i, current);
-              current = "";
-            }
-            break;
-            case '&':
-            if(!current.equals("&")){
-              addToken(lineNumber, i, current);
-              current = "" + c;
-            } else{
-              current += c;
-              addToken(lineNumber, i, current);
-              current = "";
-            }
-            break;
-            default:
-            if(current.equals("<")){
-              addToken(lineNumber, i, current);
-              current = "";
-              break;
-            } 
-            if(!(Character.isDigit(c) || Character.isAlphabetic(c))){
-              addToken(lineNumber, i, current);
-              errorHandler.addError(new Error("Caracter " + c + " no reconocido", lineNumber, i));
-              current = "";
-              break;
-            }
-            try {
-              Integer.valueOf(current);
-              if(Character.isDigit(c)){
-                current += c;
-              } else if(Character.isAlphabetic(c)){
+              if(!current.equals("<")){
                 addToken(lineNumber, i, current);
                 current = "" + c;
+              } else{
+                current += c;
+                addToken(lineNumber, i, current);
+                current = "";
               }
-            } catch (Exception e) { 
-              current += c;
+              break;
+            case '=':
+              if(!current.equals("<") && !current.equals(">") && !current.equals("=")){
+                addToken(lineNumber, i, current);
+                current = "" + c;
+              } else{
+                current += c;
+                addToken(lineNumber, i, current);
+                current = "";
+              }
+              break;
+            case '>':
+              addToken(lineNumber, i, current);
+              current = "" + c;
+              break;
+            case '|':
+              if(!current.equals("|")){
+                addToken(lineNumber, i, current);
+                current = "" + c;
+              } else{
+                current += c;
+                addToken(lineNumber, i, current);
+                current = "";
+              }
+              break;
+            case '&':
+            if(!current.equals("&")){
+                addToken(lineNumber, i, current);
+                current = "" + c;
+              } else{
+                current += c;
+                addToken(lineNumber, i, current);
+                current = "";
+              }
+              break;
+            default:
+              if(current.equals("<")){
+                addToken(lineNumber, i, current);
+                current = "";
+                break;
+              } 
+              if(!(Character.isDigit(c) || Character.isAlphabetic(c))){
+                addToken(lineNumber, i, current);
+                errorHandler.addError(new Error("Caracter " + c + " no reconocido", lineNumber, i));
+                current = "";
+                break;
+              }
+              try {
+                Integer.valueOf(current);
+                if(Character.isDigit(c)){
+                  current += c;
+                } else if(Character.isAlphabetic(c)){
+                  addToken(lineNumber, i, current);
+                  current = "" + c;
+                }
+              } catch (Exception e) { 
+                current += c;
+              }
+              break;
             }
-            break;
-          }
         }
       }
       addToken(lineNumber, 0, current);
@@ -161,29 +162,18 @@ public class Scanner{
   private void addToken(int lineNumber, int column, String current){
     if(current.isEmpty()) return;
     
-    if(stm.getToken(current) != null){
-      tokens.add(new Token(stm.getToken(current), current, lineNumber, column));
-    } else if(current.equals("<")){
-      tokens.add(new Token("LT", current, lineNumber, column));
-    } else if(current.equals(">")){
-      tokens.add(new Token("MT", current, lineNumber, column));
-    } else if(current.equals("<=")){
-      tokens.add(new Token("LET", current, lineNumber, column));
-    } else if(current.equals(">=")){
-      tokens.add(new Token("MET", current, lineNumber, column));
-    } else if(current.equals("==")){
-      tokens.add(new Token("EQUAL", current, lineNumber, column));
-    } else if(current.equals("<<")){
-      tokens.add(new Token("OUT", current, lineNumber, column));
-    } else if(current.equals("=")){
-      tokens.add(new Token("ASSIGN", current, lineNumber, column));
-    } else if(current.equals("||")){
-      tokens.add(new Token("OR", current, lineNumber, column));
-    } else if(current.equals("&&")){
-      tokens.add(new Token("AND", current, lineNumber, column));
-    } else if(current.equals("&") || current.equals("|")){
-      errorHandler.addError(new Error("Token " + current + " no valido", lineNumber, column));
-    } else{
+    if(stm.getToken(current) != null) tokens.add(new Token(stm.getToken(current), current, lineNumber, column));
+    else if(current.equals("<")) tokens.add(new Token("LT", current, lineNumber, column));
+    else if(current.equals(">")) tokens.add(new Token("MT", current, lineNumber, column));
+    else if(current.equals("<=")) tokens.add(new Token("LET", current, lineNumber, column));
+    else if(current.equals(">=")) tokens.add(new Token("MET", current, lineNumber, column));
+    else if(current.equals("==")) tokens.add(new Token("EQUAL", current, lineNumber, column));
+    else if(current.equals("<<")) tokens.add(new Token("OUT", current, lineNumber, column));
+    else if(current.equals("=")) tokens.add(new Token("ASSIGN", current, lineNumber, column));
+    else if(current.equals("||")) tokens.add(new Token("OR", current, lineNumber, column));
+    else if(current.equals("&&")) tokens.add(new Token("AND", current, lineNumber, column));
+    else if(current.equals("&") || current.equals("|")) errorHandler.addError(new Error("Token " + current + " no valido", lineNumber, column));
+    else{
       try{
         Integer.valueOf(current);
         tokens.add(new Token("NUM", current, lineNumber, column));
@@ -193,22 +183,14 @@ public class Scanner{
     }
   }
   
-  public void reset(){
-    tokens.clear();
-  }
+  public void reset(){ tokens.clear(); }
   
-  public ArrayList<Token> getTokens() {
-    return tokens;
-  }
+  public ArrayList<Token> getTokens() { return tokens; }
   
   @Override
   public String toString(){
     String string = "";
-    
-    for (Token token : tokens) {
-      string += token + "\n";
-    }
-    
+    for (Token token : tokens) string += token + "\n";
     return string;
   }
 }

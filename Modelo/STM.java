@@ -6,29 +6,17 @@ public class STM {
   private ArrayList<Symbol> symbols = new ArrayList<>();
   private ErrorHandler errorHandler;
 
-  public STM(ErrorHandler errorHandler){
-    this.errorHandler = errorHandler;
-  }
+  public STM(ErrorHandler errorHandler){ this.errorHandler = errorHandler; }
 
-  public void reset(){
-    symbols.clear();
-  }
+  public void reset(){ symbols.clear(); }
 
   public void addKeywords(){
-    keywords.add("main");
-    keywords.add("if");
-    keywords.add("else");
-    keywords.add("while");
-    keywords.add("cout");
-    keywords.add("int");
-    keywords.add("bool");
-    keywords.add("true");
-    keywords.add("false");
+    keywords.add("main");   keywords.add("if");   keywords.add("else");
+    keywords.add("while");  keywords.add("cout"); keywords.add("int");
+    keywords.add("bool");   keywords.add("true"); keywords.add("false");
   }
 
-  public String getToken(String s){
-    return (keywords.contains(s) ? s.toUpperCase() : null);
-  }
+  public String getToken(String s){ return (keywords.contains(s) ? s.toUpperCase() : null); }
 
   public Symbol getSymbol(String id, String ambit){
     for(Symbol s : symbols) if(s.equals(new Symbol(id, null, ambit))) return s;
@@ -58,7 +46,5 @@ public class STM {
     return false;  
   }
 
-  public ArrayList<Symbol> getSymbols() {
-    return symbols;
-  }
+  public ArrayList<Symbol> getSymbols() { return symbols; }
 }

@@ -1,19 +1,22 @@
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.Vector;
 
 public class Vista extends JFrame{
   private JMenuBar menuBar;
   private JMenu fileMenu, fileName;
   private JMenuItem saveButton, uploadButton;
   private JPanel topPanel, bottomPanel, scannerPanel, errorPanel, buttonsPanel, cIPanel, cOPanel;
-  private JTextArea fileText, scannerText, errorText, cIText, cOText;
+  private JTextArea fileText, scannerText, errorText, cOText;
+  private JTable cITable;
   @SuppressWarnings("unused")
   private JScrollPane filePane, scannerPane, errorPane, cIPane, cOPane;
   private JButton scannerButton, parserButton, semanticButton, cIButton, cOButton;
   
   private JFileChooser fileChooser;
-  private Font font;
+  private Font font, fontTable;
+  private String[] columnNames;
   
   public Vista(){
     super("Dev CJG");
@@ -28,6 +31,7 @@ public class Vista extends JFrame{
     setIconImage(new ImageIcon("CJG_Logo.png").getImage());
     
     font = new Font("JetBrains Mono", Font.PLAIN, 20);
+    fontTable = new Font("JetBrains Mono", Font.PLAIN, 12);
     fileChooser = new JFileChooser("/home/jorgitox/Documentos/Programas/lya/CodigoCJG");
     
     setJMenuBar(menuBar = new JMenuBar());
@@ -71,10 +75,9 @@ public class Vista extends JFrame{
     cIPanel.add(cIButton = new JButton("CI"), BorderLayout.NORTH);
     cIButton.setFont(font);
     cIButton.setBackground(Color.YELLOW);
-    cIPanel.add(cIPane = new JScrollPane(cIText = new JTextArea()));
-    cIText.setFont(font);
-    cIText.setEditable(false);
-    cIText.setDisabledTextColor(Color.BLACK);
+    cIPanel.add(cIPane = new JScrollPane(cITable = new JTable(new String[][]{}, columnNames = new String[]{"Etiqueta", "Comando", "Operandos"})));
+    cITable.getTableHeader().setFont(fontTable);
+    cITable.setFont(fontTable);
     bottomPanel.add(cOPanel = new JPanel(new BorderLayout()));
     cOPanel.add(cOButton = new JButton("CO"), BorderLayout.NORTH);
     cOButton.setFont(font);
@@ -116,16 +119,25 @@ public class Vista extends JFrame{
     fileText.setText(content);
   }
   
-  public void setScanner(String content){
-    scannerText.setText(content);
-  }
+  public void setScanner(String content){ scannerText.setText(content); }
   
-  public void setError(String content){
-    errorText.setText(content);
-  }
+  public void setError(String content){ errorText.setText(content); }
 
-  public void setCIGenerator(String content){
-    cIText.setText(content);
+  public void setCIGenerator(String [][] content){
+    cIPanel.remove(cIPane);
+
+    cIPanel.add(cIPane = new JScrollPane(cITable = new JTable(content, columnNames) {
+      @Override
+      public boolean isCellEditable(int row, int column) {
+        return false;
+      }
+    }));
+
+    cITable.setFont(fontTable);
+    cITable.getTableHeader().setFont(fontTable);
+    cITable.getTableHeader().setReorderingAllowed(false);
+    repaint();
+    revalidate();
   }
   
   public void setScannerButton(Color c){
@@ -152,35 +164,19 @@ public class Vista extends JFrame{
     cIButton.update(cIButton.getGraphics());
   }
   
-  public JMenuItem getSaveButton() {
-    return saveButton;
-  }
+  public JMenuItem getSaveButton() { return saveButton; }
   
-  public JMenuItem getUploadButton() {
-    return uploadButton;
-  }
+  public JMenuItem getUploadButton() { return uploadButton; }
   
-  public JButton getScannerButton() {
-    return scannerButton;
-  }
+  public JButton getScannerButton() { return scannerButton; }
   
-  public JButton getParserButton() {
-    return parserButton;
-  }
+  public JButton getParserButton() { return parserButton; }
   
-  public JButton getSemanticButton() {
-    return semanticButton;
-  }
+  public JButton getSemanticButton() { return semanticButton; }
   
-  public JButton getcIButton() {
-    return cIButton;
-  }
+  public JButton getcIButton() { return cIButton; }
   
-  public JButton getcOButton() {
-    return cOButton;
-  }
+  public JButton getcOButton() { return cOButton; }
   
-  public JTextArea getFileText() {
-    return fileText;
-  }
+  public JTextArea getFileText() { return fileText; }
 }

@@ -52,8 +52,6 @@ public class Parser {
       if(tokens.get(position++).getId() != 12) return addError("SEMI", tokens.get(position - 1)); 
       return true;
     }
-    errorHandler.addError(new Error("SYNTAX ERROR", -1, -1));
-    errorHandler.addError(new Error("Invalid statement", tokens.get(position - 1).getLine(), tokens.get(position - 1).getColumn()));
     return false;
   }
   
@@ -101,8 +99,7 @@ public class Parser {
   private boolean cout(){
     if(tokens.get(position++).getId() != 5) return addError("COUT", tokens.get(position - 1));
     if(tokens.get(position++).getId() != 18) return addError("OUT", tokens.get(position - 1)); 
-    if(tokens.get(position).getId() != 16) return expr();
-    else return string(); 
+    return string(); 
   }
   
   private boolean expr(){
@@ -153,8 +150,6 @@ public class Parser {
       if(tokens.get(position++).getId() != 6) return addError("TRUE-FALSE", tokens.get(position - 1));
       return true;
     }
-    errorHandler.addError(new Error("SYNTAX ERROR", -1, -1));
-    errorHandler.addError(new Error("Invalid primary", tokens.get(position - 1).getLine(), tokens.get(position - 1).getColumn()));
     return false;
   }
 

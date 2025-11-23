@@ -1,11 +1,11 @@
 PROGRAM ::= MAIN_FUNCTION
 MAIN_FUNCTION ::= int main ( ) { STATEMENT* }
 STATEMENT ::= [DECL ;] | [ASSIGN ;] | IF | WHILE | [COUT ;]
-DECL ::=  TYPE ID [= EXPR]?
+DECL ::= TYPE ID [= EXPR]?
 ASSIGN ::= ID = EXPR
 IF ::= if ( EXPR ) { STATEMENT* } [else { STATEMENT* }]?
 WHILE ::= while ( EXPR ) { STATEMENT* }
-COUT ::= cout << [EXPR | STRING]
+COUT ::= cout << STRING
 EXPR ::= CONDITION
 CONDITION ::= COMPARISON [[&& | ||] COMPARISON]?
 COMPARISON ::= TERM [[< | > | <= |>= | ==] TERM]?

@@ -10,21 +10,15 @@ public class Symbol{
     this.ambit = ambit;
   }
 
-  public String getId() {
-    return id;
-  }
+  public String getId() { return id; }
 
-  public String getAmbit() {
-    return ambit;
-  }
+  public String getAmbit() { return ambit; }
 
-  public String getType() {
-    return type;
-  }
+  public String getType() { return type; }
 
   public String getRes() {
-    if(type.equals("int")) return "RESD";
-    if(type.equals("bool")) return "RESB";
+    if(type.equals("int")) return "DD";
+    if(type.equals("bool")) return "DB";
     return null;
   }
 
@@ -45,14 +39,11 @@ public class Symbol{
   }
 
   @Override
-  public String toString() {
-    return "[" + id + "_" + ambit + "]";
-  }
+  public String toString() { return "[" + id + "_" + ambit + "]"; }
 
   @Override
   public boolean equals(Object obj) {
     if(!id.equals(((Symbol)obj).getId())) return false;
-
     return isSubAmbit(((Symbol)obj).getAmbit());
   }
 }

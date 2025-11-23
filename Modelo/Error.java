@@ -9,17 +9,11 @@ public class Error {
     this.column = column;
   }
 
-  public int getColumn() {
-    return column;
-  }
+  public int getColumn() { return column; }
 
-  public int getLine() {
-    return line;
-  }
+  public int getLine() { return line; }
 
-  public String getType() {
-    return type;
-  }
+  public String getType() { return type; }
 
   public String toString(){
     if(line == -1) return type;
